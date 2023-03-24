@@ -2,11 +2,14 @@ package src.p03.c01;
 
 import java.util.Enumeration;
 import java.util.Hashtable;
+import java.util.Random;
 
 public class Parque implements IParque{
 
+	// MIN y MAX son los valores mínimo y máximo de personas que pueden estar en el parque
+	private final static int MIN = 0;
+	private final static int MAX = 100;
 
-	// TODO 
 	private int contadorPersonasTotales;
 	private Hashtable<String, Integer> contadoresPersonasPuerta;
 	
@@ -76,16 +79,20 @@ public class Parque implements IParque{
 		
 	}
 
-	protected void comprobarAntesDeEntrar(){
-		//
-		// TODO
-		//
+	protected boolean comprobarAntesDeEntrar(){
+		if (contadorPersonasTotales == MAX) {
+			return false;
+		} else {
+			return true;
+		}
 	}
 
-	protected void comprobarAntesDeSalir(){
-		//
-		// TODO
-		//
+	protected boolean comprobarAntesDeSalir(){
+		if (contadorPersonasTotales == MIN) {
+			return false;
+		} else {
+			return true;
+		}
 	}
 
 
