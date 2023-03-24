@@ -3,12 +3,18 @@ package src.p03.c01;
 import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.Random;
+import java.util.concurrent.TimeUnit;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class Parque implements IParque{
 
 	// MIN y MAX son los valores mínimo y máximo de personas que pueden estar en el parque
 	private final static int MIN = 0;
 	private final static int MAX = 100;
+
+	// Generador de números aleatorios
+	private static Random generadorAleatorios = new Random();
 
 	private int contadorPersonasTotales;
 	private Hashtable<String, Integer> contadoresPersonasPuerta;
@@ -21,33 +27,41 @@ public class Parque implements IParque{
 
 
 	@Override
-	public void entrarAlParque(String puerta){		// TODO
-		
-		// Si no hay entradas por esa puerta, inicializamos
+	public synchronized void entrarAlParque(String puerta) throws InterruptedException {
+		while(!comprobarAntesDeEntrar()) {
+			wait();
+		}
+
+		// Aumentar el total
+		contadorPersonasTotales++;
+
+		try { // Esperar un tiempo aleatorio
+			TimeUnit.MICROSECONDS.sleep(generadorAleatorios.nextInt(3000));
+		} catch (InterruptedException e) { // Interrupción del hilo
+			Logger.getGlobal().log(Level.INFO, "Interrupción del hilo que utiliza el objeto parque");
+			return;
+		}
+
+		// Si no hay entradas por esa puerta, inicializar
 		if (contadoresPersonasPuerta.get(puerta) == null){
 			contadoresPersonasPuerta.put(puerta, 0);
 		}
 		
-		// TODO
-				
-		
-		// Aumentamos el contador total y el individual
-		contadorPersonasTotales++;		
+		// Aumentar el individual	
 		contadoresPersonasPuerta.put(puerta, contadoresPersonasPuerta.get(puerta)+1);
 		
-		// Imprimimos el estado del parque
+		// Imprimir el estado del parque
 		imprimirInfo(puerta, "Entrada");
 		
-		// TODO
+		checkInvariante();
 		
-		
-		// TODO
+		//Notificar cambio de estado
+		notifyAll();
 		
 	}
 	
-	// 
-	// TODO Método salirDelParque
-	//
+	@Override
+	public synchronized void salirDelParque(String puerta) throws InterruptedException {}
 	
 	
 	private void imprimirInfo (String puerta, String movimiento){
