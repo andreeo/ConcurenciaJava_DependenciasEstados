@@ -11,15 +11,15 @@ public class Parque implements IParque{
 
 	// MIN y MAX son los valores mínimo y máximo de personas que pueden estar en el parque
 	private final static int MIN = 0;
-	private final static int MAX = 100;
+	private final static int MAX = 50;
 
 	// Generador de números aleatorios
 	private static Random generadorAleatorios = new Random();
 
 	private int contadorPersonasTotales;
 	private Hashtable<String, Integer> contadoresPersonasPuerta;
-	
-	
+
+
 	public Parque() {
 		contadorPersonasTotales = 0;
 		contadoresPersonasPuerta = new Hashtable<String, Integer>();
@@ -46,64 +46,64 @@ public class Parque implements IParque{
 		if (contadoresPersonasPuerta.get(puerta) == null){
 			contadoresPersonasPuerta.put(puerta, 0);
 		}
-		
-		// Aumentar el individual	
+
+		// Aumentar el individual
 		contadoresPersonasPuerta.put(puerta, contadoresPersonasPuerta.get(puerta)+1);
-		
+
 		// Imprimir el estado del parque
 		imprimirInfo(puerta, "Entrada");
-		
+
 		checkInvariante();
-		
+
 		//Notificar cambio de estado
 		notifyAll();
-		
+
 	}
-	
+
 	@Override
 	public synchronized void salirDelParque(String puerta) throws InterruptedException {
 		while(!comprobarAntesDeSalir()) {
 			wait();
 		}
-		
+
 		// Disminuir el total
-		contadorPersonasTotales--;	
-		
+		contadorPersonasTotales--;
+
 		try {
 			TimeUnit.MICROSECONDS.sleep(generadorAleatorios.nextInt(3000));
 		} catch (InterruptedException e) {
 			Logger.getGlobal().log(Level.INFO, "Interrupción del hilo que utiliza el objeto parque");
 			return;
 		}
-		
+
 		if(contadoresPersonasPuerta.get(puerta) == null) {
 			contadoresPersonasPuerta.put(puerta, 0);
 		}
-		
-		// Disminuir el individual	
+
+		// Disminuir el individual
 		contadoresPersonasPuerta.put(puerta, contadoresPersonasPuerta.get(puerta)-1);
-		
+
 		// Imprimir el estado del parque
 		imprimirInfo(puerta, "Salida");
-		
+
 		checkInvariante();
-		
+
 		//Notificar cambio de  estado
-		notifyAll();		
+		notifyAll();
 	}
-	
-	
+
+
 	private void imprimirInfo (String puerta, String movimiento){
 		System.out.println(movimiento + " por puerta " + puerta);
 		System.out.println("--> Personas en el parque " + contadorPersonasTotales); //+ " tiempo medio de estancia: "  + tmedio);
-		
+
 		// Iteramos por todas las puertas e imprimimos sus entradas
 		for(String p: contadoresPersonasPuerta.keySet()){
 			System.out.println("----> Por puerta " + p + " " + contadoresPersonasPuerta.get(p));
 		}
 		System.out.println(" ");
 	}
-	
+
 	private int sumarContadoresPuerta() {
 		int sumaContadoresPuerta = 0;
 			Enumeration<Integer> iterPuertas = contadoresPersonasPuerta.elements();
@@ -112,7 +112,7 @@ public class Parque implements IParque{
 			}
 		return sumaContadoresPuerta;
 	}
-	
+
 	protected void checkInvariante() {
 		assert sumarContadoresPuerta() == contadorPersonasTotales : "INV: La suma de contadores de las puertas debe ser igual al valor del contador del parte";
 	}
