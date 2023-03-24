@@ -61,7 +61,36 @@ public class Parque implements IParque{
 	}
 	
 	@Override
-	public synchronized void salirDelParque(String puerta) throws InterruptedException {}
+	public synchronized void salirDelParque(String puerta) throws InterruptedException {
+		while(!comprobarAntesDeSalir()) {
+			wait();
+		}
+		
+		// Disminuir el total
+		contadorPersonasTotales--;	
+		
+		try {
+			TimeUnit.MICROSECONDS.sleep(generadorAleatorios.nextInt(3000));
+		} catch (InterruptedException e) {
+			Logger.getGlobal().log(Level.INFO, "Interrupción del hilo que utiliza el objeto parque");
+			return;
+		}
+		
+		if(contadoresPersonasPuerta.get(puerta) == null) {
+			contadoresPersonasPuerta.put(puerta, 0);
+		}
+		
+		// Disminuir el individual	
+		contadoresPersonasPuerta.put(puerta, contadoresPersonasPuerta.get(puerta)-1);
+		
+		// Imprimir el estado del parque
+		imprimirInfo(puerta, "Salida");
+		
+		checkInvariante();
+		
+		//Notificar cambio de  estado
+		notifyAll();		
+	}
 	
 	
 	private void imprimirInfo (String puerta, String movimiento){
@@ -86,11 +115,6 @@ public class Parque implements IParque{
 	
 	protected void checkInvariante() {
 		assert sumarContadoresPuerta() == contadorPersonasTotales : "INV: La suma de contadores de las puertas debe ser igual al valor del contador del parte";
-		// TODO 
-		// TODO
-		
-		
-		
 	}
 
 	protected boolean comprobarAntesDeEntrar(){
