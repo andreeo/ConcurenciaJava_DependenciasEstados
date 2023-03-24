@@ -1,3 +1,5 @@
-# Practica3_PCTR_DependenciasEstados
+# Practica3 sobre dependencias de estados en programación concurrente en java
 
-Plantilla para la realización de la tercera práctica de la asignatura de Programación Concurrente y Tiempo Real del Grado en Ingeniería Informática de la Universidad de Burgos.
+Trabajo sobre un programa parque que gestiona la entrada y salida de personas de forma concurrente.
+
+co-author and develop by: @andreeo
